@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset=utf-8>
+    <title>Three.js Object Tester Skeleton</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { width: 100%; height: 100% }
+    </style>
+</head>
+
+<body>
+
+<script type="module">
+    import * as THREE from "./js-r119/build/three.module.js";
+    import { OrbitControls } from './js-r119/examples/jsm/controls/OrbitControls.js';
+    import { GUI } from './js-r119/examples/jsm/libs/dat.gui.module.js';
+
+    // Globális változók
+    var WIDTH, HEIGHT, aspectRatio;
+    var renderer;
+    var scene, camera;
+    var controls;
+    var kocka;
+    var solarSystemGroup;
+    var sunGeometry, earthGeometry;
+    var sunMaterial, earthMaterial;
+    var sunMesh, earthMesh, earthOrbitMesh;
+    var earthOrbitAngle, earthOrbitRadius, earthOrbitFocalDistance;
+    var ctrl;
+
+    var solarSystemController = function () {
+        this.earthOrbitSpeed = 0.5;
+        this.earthOrbitRatio = 0.5;
+    };
+    init();
+    animate();
+
+    function addControlGui( controlObject ) {
+        var gui = new GUI( { autoPlace: false });
+        gui.add( controlObject, 'earthOrbitRatio', 0.1, 1.0);
+        gui.add( controlObject, 'earthOrbitSpeed', 0.1, 1.0);
+
+        gui.domElement.style.position = 'absolute';
+        gui.domElement.style.top = '0px';
+        gui.domElement.style.right = '0px';
+        document.body.appendChild( gui.domElement );
+    }
+
+    function init() {
+
+
+        earthOrbitAngle = 0.0;
+        earthOrbitRadius = 50.0;
+        // Böngésző ablakméret lekérése és méretarány számítása
+        HEIGHT = window.innerHeight;
+        WIDTH = window.innerWidth;
+        aspectRatio = WIDTH / HEIGHT;
+
+        // Renderer létrehozása és DOM-hoz adása
+        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        renderer.setSize( WIDTH, HEIGHT );
+
+        renderer.setClearColor( 0x000000 );
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild( renderer.domElement );
+
+        // Színtér létrehozása
+        scene = new THREE.Scene();
+
+        // Kamera létrehozása és vetítési paramétereinek beállítása
+        camera = new THREE.OrthographicCamera( -WIDTH / 2, WIDTH / 2, HEIGHT / 2, -HEIGHT / 2, -1000, 1000 );
+        camera.position.set( 4, 4, 3 );
+        camera.lookAt( scene.position );
+
+        solarSystemGroup = new THREE.Group();
+        scene.add( solarSystemGroup );
+
+        var earthOrbitMaterial = new THREE.MeshBasicMaterial( { color: 0x808080, transparent: true, opacity: 0.2, side: THREE.DoubleSide } );
+        var earthOrbitGeometry = new THREE.CircleGeometry( earthOrbitRadius, 32 );
+        earthOrbitMesh = new THREE.Mesh( earthOrbitGeometry, earthOrbitMaterial );
+        earthOrbitMesh.rotation.x = 0.5 * Math.PI;
+        solarSystemGroup.add( earthOrbitMesh );
+
+        ctrl = new solarSystemController();
+        addControlGui( ctrl );
+
+        window.addEventListener( 'resize', handleWindowResizeOrtho, false );
+
+
+        // Objektumok létrehozása
+        var groundGeometry = new THREE.PlaneGeometry( 100, 200 );
+        var groundMaterial = new THREE.MeshPhongMaterial( {
+            color: 0x008000,
+            wireframe: false,
+            side: THREE.DoubleSide
+        } );
+
+
+        var groundMesh = new THREE.Mesh( groundGeometry, groundMaterial );
+        groundMesh.rotation.x = -1.0 * THREE.MathUtils.degToRad( 90 );
+        groundMesh.receiveShadow = true;
+        groundMesh.castShadow = false;
+        scene.add( groundMesh );
+
+        var boxGeometry = new THREE.BoxGeometry( 10, 10, 10 );
+        var boxMaterial = new THREE.MeshPhongMaterial( {    color: 0xa0adaf,
+            shininess: 80,
+            specular: 0x111111,
+            side: THREE.FrontSide,
+            wireframe: false} );
+        var toronyMesh = new THREE.Mesh( boxGeometry, boxMaterial );
+        toronyMesh.receiveShadow = true;
+        toronyMesh.castShadow = true;
+
+        var boxGeometry2 = new THREE.BoxGeometry( 10, 10, 30 );
+        var boxMaterial2 = new THREE.MeshPhongMaterial( {    color: 0xa0adaf,
+            shininess: 80,
+            specular: 0x111111,
+            side: THREE.FrontSide,
+            wireframe: false} );
+        var alapMesh = new THREE.Mesh( boxGeometry2, boxMaterial2 );
+        alapMesh.receiveShadow = true;
+        alapMesh.castShadow = true;
+
+        var boxGeometry3 = new THREE.BoxGeometry( 4, 4, 4 );
+        var boxMaterial3 = new THREE.MeshPhongMaterial( {    color: 0xa0adaf,
+            shininess: 80,
+            specular: 0x111111,
+            side: THREE.FrontSide,
+            wireframe: false} );
+         kocka = new THREE.Mesh( boxGeometry3, boxMaterial3 );
+        kocka.receiveShadow = true;
+        kocka.castShadow = true;
+        kocka.rotation
+
+        var coneGeometry = new THREE.ConeGeometry( 7, 16, 4 );
+        var coneMaterial = new THREE.MeshPhongMaterial( {    color: 0xa0adaf,
+            shininess: 80,
+            specular: 0x111111,
+            side: THREE.FrontSide,
+            wireframe: false} );
+        var toronyTetoMesh = new THREE.Mesh( coneGeometry, coneMaterial );
+        toronyTetoMesh.receiveShadow = true;
+        toronyTetoMesh.castShadow = true;
+        toronyTetoMesh.rotation.set(0,THREE.MathUtils.degToRad(45),0);
+
+        toronyMesh.position.set( 5, 15, 25 );
+        alapMesh.position.set( 5, 5, 15 );
+        toronyTetoMesh.position.set(5, 27, 25);
+        kocka.position.set(0, 15, 39);
+
+
+        var ambient = new THREE.AmbientLight( 0x444444 );
+        scene.add( ambient );
+
+        var pLight = new THREE.PointLight( 0x00ffff, 1 );
+        pLight.position.set( 0, 30, 50 );
+        pLight.castShadow = true;
+        scene.add( pLight );
+        var sphereSize = 0.2;
+        var pointLightHelper = new THREE.PointLightHelper( pLight, sphereSize );
+        scene.add( pointLightHelper );
+
+        var aH = new THREE.AxesHelper( 15 );
+        scene.add( aH );
+
+        scene.add(toronyMesh);
+        scene.add(alapMesh);
+        scene.add( toronyTetoMesh );
+        scene.add(kocka);
+
+        // Az ablak későbbi átméretezése esetén visszahívható függvény megadása
+        window.addEventListener( 'resize', handleWindowResize, false );
+
+        controls = new OrbitControls( camera, renderer.domElement );
+        controls.rotateSpeed = 5.0;
+        controls.panSpeed = 1.0;
+    }
+
+    function handleWindowResize() {
+        // Az ablak átméretezése esetén a kamera vetítési paraméterek újraszámolása
+        HEIGHT = window.innerHeight;
+        WIDTH = window.innerWidth;
+        console.log( 'WIDTH=' + WIDTH + '; HEIGHT=' + HEIGHT );
+        renderer.setSize( WIDTH, HEIGHT );
+        aspectRatio = WIDTH / HEIGHT;
+        camera.aspect = aspectRatio;
+        camera.updateProjectionMatrix();
+
+        render();
+    }
+
+    function handleWindowResizeOrtho() {
+        // Az ablak átméretezése esetén a kamera vetítési paraméterek újraszámolása
+        HEIGHT = window.innerHeight;
+        WIDTH = window.innerWidth;
+        renderer.setSize( WIDTH, HEIGHT );
+
+        camera.left = WIDTH / -2;
+        camera.right = WIDTH / 2;
+        camera.top = HEIGHT / 2;
+        camera.bottom = HEIGHT / -2;
+        camera.updateProjectionMatrix();
+
+        render();
+    }
+
+    function animate() {
+
+        // http://www.bethlen.hu/matek/mathist/forras/Ellipszis_definicioja.htm
+        // Ellipszis fókuszpont távolság számítása a középponttól Pithagorász-tétellel
+        earthOrbitFocalDistance = Math.sqrt( earthOrbitRadius * earthOrbitRadius - earthOrbitRadius * earthOrbitRadius * ctrl.earthOrbitRatio * ctrl.earthOrbitRatio ) / 2.0;
+        earthOrbitMesh.position.z = earthOrbitFocalDistance;
+
+        // Ellipszis pálya kialakítása az aránytényező szerint
+        earthOrbitMesh.scale.x = ctrl.earthOrbitRatio;
+
+        // Bolygó mozgatás és új pozíciójának számítása
+        earthOrbitAngle -= ctrl.earthOrbitSpeed;
+        var radians = earthOrbitAngle * Math.PI / 180;
+        kocka.position.x = Math.cos( radians ) * earthOrbitRadius * ctrl.earthOrbitRatio;
+        kocka.position.z = Math.sin( radians ) * earthOrbitRadius + earthOrbitFocalDistance;
+
+
+        // Újabb képkocka rajzolásának kérése.
+        // Maximálisan 60 FPS-t biztosít a rendszer.
+        requestAnimationFrame( animate );
+        // Kameramozgás vezérlése
+        controls.update();
+
+        kocka.rotation.x += 0.01;
+        kocka.rotation.y += 0.01;
+
+        render();
+    }
+
+    function render() {
+        // 3D -> 2D vetített kép kiszámítása.
+        // scene 3D színtér képe a camera kamera szemszögéből.
+        renderer.render( scene, camera );
+    }
+
+</script>
+</body>
+</html>
