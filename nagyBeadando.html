@@ -21,7 +21,7 @@
         #inforight {
             position: absolute;
             top: 10px;
-            left: 400px;
+            left: 300px;
             width: 50%;
             text-align: right;
             z-index: 100;
@@ -39,7 +39,6 @@
 </div>
 <div id="inforight">
     <p id="rightinfopanel1">Használható billentyűk: i/I-vel szöveg ki/bekapcsolása. Többi funckió a jobb felső konzolon:</p>
-    <p id="rightinfopanel2">Nap sugarának növelése, Nap gyorsítása, Nap megállítása, Éjszaka/nappal kiválasztása, Fáklya meggyújtása/eloltása, Kapu kinyitása</p>
 </div>
 <script type="module">
     import * as THREE from "./js-r119/build/three.module.js";
@@ -99,6 +98,7 @@
     var templomFalTexture = textureLoader.load( 'textures/churchwall.jpg' );
     var foldTexture = textureLoader.load( 'textures/crops.jpg' );
 
+    //grafikus vezerlo
     function addControlGui( controlObject ) {
         var gui = new GUI( { autoPlace: false });
         gui.add( controlObject, 'sunOrbitRatio', 0.1, 1.0);
@@ -115,6 +115,7 @@
         document.body.appendChild( gui.domElement );
     }
 
+    //elso loader a bastya modellt tolti be
     function loader() {
         var loader = new OBJLoader();
         loader.load(
@@ -138,6 +139,7 @@
             })
     }
 
+    //masodik loader a kastely modellt tolti be
     function loader2() {
         var loaderHill = new OBJLoader();
         loaderHill.load(
@@ -161,6 +163,7 @@
             });
     }
 
+    //setTimout, hogy biztos mindket modell be legyen importalva, amikor az init() fuggveny elindul
     loader2()
     setTimeout(loader, 100);
 
@@ -169,6 +172,7 @@
     // Animáció indítása
     //animate();
 
+    // i betu hatasara ki/be kapcsoljuk a szoveges informaciokat
     function handleKeyDown( event ) {
         if(event.keyCode === 73)
         turnOffInfoPanels();
@@ -452,7 +456,7 @@
 
         varFalGroup.add(varfal5Mesh);
 
-
+        //holdereket hasznalunk, hogy a kaput megfeleloen tudjuk forgatni, nem a sajat tengelye korul
         holder1 = new THREE.Object3D();
         //mesh3.position.set( 0.0, -3.0, 69.0 );
         holder1.position.set(-30,0,180);
@@ -569,14 +573,14 @@
 
         varFalGroup.add(varfalBastyaBlender4);
 
-        //varfal bastya3
+        //varfal bastya5
         varfalBastyaBlender5.receiveShadow = true;
         varfalBastyaBlender5.castShadow = true;
         varfalBastyaBlender5.position.set(45,15,150);
 
         varFalGroup.add(varfalBastyaBlender5);
 
-        //varfal bastya3
+        //varfal bastya6
         varfalBastyaBlender6.receiveShadow = true;
         varfalBastyaBlender6.castShadow = true;
         varfalBastyaBlender6.position.set(-45,15,150);
@@ -642,6 +646,7 @@
 
     function animate() {
 
+        //grafikus vezerlorol jonnek az adatok
         if(ctrl.isNight){
             pLight.intensity=0;
             ambient.intensity=0.1;
