@@ -1,0 +1,16 @@
+Bástya:
+
+1. Henger objektumot hoztam létre
+2. Megnyújtottam a henger objektumot, size-al
+3. Inset faces-el a henger tetejére egy vékonyabb részt elválasztottam a henger tetejének szélén.
+4. Kiemeltem minden második fokot az új sávon.
+
+
+Kastély:
+
+1. Létrehoztam egy kocka objektumot
+2. Inset face-el megalkottam a kocka tetején egy külső sávot.
+3. Plusz élek hozzáadásával felapróztam a kockát, hogy extrude region-al kiemelhessem a fokokat.
+4. Extrude regionnal a kocka tetején kiemeltem a fokokat.
+5. Henger objektumot hoztam létre, amelyet 3-szor leklónoztam, ezek lettek a kastály bástyái.
+6. A kastély bástyái is hasonló átalakításokon estek át, mint a várfal bástyái.
